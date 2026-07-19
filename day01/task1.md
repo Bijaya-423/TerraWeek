@@ -94,19 +94,102 @@ if you'd like to explore how iac fits into your workflow
 
 - Ansible: Primarily a configuration management and orchestration tool, whereas Terraform provisions the underlying servers and networks, making them highly complementary rather than direct competitors.
 
+Task 2: Install Terraform (latest version)
+==========================================
+ubuntu@ip-172-31-35-252:~$ terraform version
+terraform -help
+Terraform v1.15.8
+on linux_amd64
+Usage: terraform [global options] <subcommand> [args]
+
+The available commands for execution are listed below.
+The primary workflow commands are given first, followed by
+less common or more advanced commands.
+
+Main commands:
+  init          Prepare your working directory for other commands
+  validate      Check whether the configuration is valid
+  plan          Show changes required by the current configuration
+  apply         Create or update infrastructure
+  destroy       Destroy previously-created infrastructure
+
+All other commands:
+  console       Try Terraform expressions at an interactive command prompt
+  fmt           Reformat your configuration in the standard style
+  force-unlock  Release a stuck lock on the current workspace
+  get           Install or upgrade remote Terraform modules
+  graph         Generate a Graphviz graph of the steps in an operation
+  import        Associate existing infrastructure with a Terraform resource
+  login         Obtain and save credentials for a remote host
+  logout        Remove locally-stored credentials for a remote host
+  metadata      Metadata related commands
+  modules       Show all declared modules in a working directory
+  output        Show output values from your root module
+  providers     Show the providers required for this configuration
+  query         Search and list remote infrastructure with Terraform
+  refresh       Update the state to match remote systems
+  show          Show the current state or a saved plan
+  stacks        Manage HCP Terraform stack operations
+  state         Advanced state management
+  taint         Mark a resource instance as not fully functional
+  test          Execute integration tests for Terraform modules
+  untaint       Remove the 'tainted' state from a resource instance
+  version       Show the current Terraform version
+  workspace     Workspace management
+
+Global options (use these before the subcommand, if any):
+  -chdir=DIR    Switch to a different working directory before executing the
+                given subcommand.
+  -help         Show this help output or the help for a specified subcommand.
+  -version      An alias for the "version" subcommand.
 
 Task 3: Learn 6 Crucial Terraform Terminologies
-===============================================
+===================================================
 
-- providers are plugins that act as translators between terraform and external platforms. They convert your astract configuration code into the specific API calls required to procision and manage resources (like servers , databases and networks) on services such as aws azure docker or kubernetes
+Provider — a plugin that lets Terraform talk to a platform (AWS, Azure, Docker…).
+-------------------------------------------------------------------------
+-  A plugin that translates your HCL config into actual API calls against a specific platform without a provider, Terraform doesn't know how to talk to aws, gcp, azure, docker, github, etc...
 
-Key concepts
-------------
-- Translation Layer: Terraform only understands Hashicorp configuration language(HCL) . providers translate HCL into API request
-
-
-- Resource Types: Each provider defines specific "resource types" (e.g., aws_instance or docker_container) that you can declare in your code.
-
-- Versioning: Providers are distributed separately from Terraform Core, allowing them to update independently.
+provider "aws" {
+  region = "us-west-2"
+}
 
 
+Resource — a piece of infrastructure you want to create (an EC2 instance, an S3 bucket…).
+-------------------------------------------------------------------------------------
+- The actual infrastructure object want terraform to create , update or destroy - a single unit of real stuff like a server, bucket or database.
+
+
+State — Terraform's record of what it manages (the terraform.tfstate file).
+---------------------------------------------------------------------
+- Terraform's source of truth mapping - it tracks what it thinks exists in the real world (ids, attributes) so it can compute diffs on the next run. Lose this file (or corrupt it) and terraform loses track of what it owns.
+
+terrafor.tfstate ->  { "aws_instance.web": { "id": "i-0abc123" } }
+
+
+Plan — a preview of the changes Terraform will make.
+----------------------------------------------------
+- A dry run that compares  your .tf config against the current state and shows exactly what will changes before anything actually happens . This is your safety net.
+
+terraform plan #shows "+ create", "~ update", "- destroy"
+
+
+
+HCL — HashiCorp Configuration Language, the syntax you write Terraform in.
+-----------------------------------------------------------------------
+- HashiCorp configuration language - the declarative sysntax (blocks, arguments, expression) you write all your .tf files in. it's not a general - purpose language. it's built specifically to describe infrastructure.
+
+variable "region" {
+  default = "us-west-2"
+}
+
+
+Module — a reusable, packaged group of Terraform configuration.
+---------------------------------------------------------------
+- A folder of .tf files packaged as a reusable unit - you call it like a function , passing inputs and getting outputs, instead of copy- pasting the same VPC/EC2/SG code every where.
+
+
+module "vpc" {
+  source = "./modules/vpc"
+  cidr = "10.0.0.0/16"
+}
