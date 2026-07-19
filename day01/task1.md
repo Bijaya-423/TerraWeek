@@ -193,3 +193,349 @@ module "vpc" {
   source = "./modules/vpc"
   cidr = "10.0.0.0/16"
 }
+
+
+
+ubuntu@ip-172-31-35-252:~/TerraWeak$ ls
+example
+ubuntu@ip-172-31-35-252:~/TerraWeak$ vim main.tf
+ubuntu@ip-172-31-35-252:~/TerraWeak$ cat main.tf
+resource "random_pet" "name" {
+        length    = 2
+        separator = "-"
+}
+
+resource "local_file" "greeting" {
+        filename        = "${path.module}/greeting.txt"
+        content         = "Hello from Terraweek 2026! \n Your infra name is : ${random_pet.name.id}\n"
+}
+
+output "pet_name" {
+        description = "The randomly generated pet name."
+        value       = random_pet.name.id
+}
+
+output "file_path" {
+        description = "Where the greeting file was written."
+        value       = local_file.greeting.filename
+}
+ubuntu@ip-172-31-35-252:~/TerraWeak$ terraform init
+Initializing the backend...
+
+Initializing provider plugins...
+- Finding latest version of hashicorp/random...
+- Finding latest version of hashicorp/local...
+- Installing hashicorp/local v2.9.0...
+- Installed hashicorp/local v2.9.0 (signed by HashiCorp)
+- Installing hashicorp/random v3.9.0...
+- Installed hashicorp/random v3.9.0 (signed by HashiCorp)
+
+Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+ubuntu@ip-172-31-35-252:~/TerraWeak$ terraform fmt
+main.tf
+ubuntu@ip-172-31-35-252:~/TerraWeak$ terraform validate
+Success! The configuration is valid.
+
+ubuntu@ip-172-31-35-252:~/TerraWeak$ terraform plan
+
+Terraform used the selected providers to generate the following execution plan. Resource
+actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # local_file.greeting will be created
+  + resource "local_file" "greeting" {
+      + content              = (known after apply)
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./greeting.txt"
+      + id                   = (known after apply)
+    }
+
+  # random_pet.name will be created
+  + resource "random_pet" "name" {
+      + id        = (known after apply)
+      + length    = 2
+      + separator = "-"
+    }
+
+Plan: 2 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + file_path = "./greeting.txt"
+  + pet_name  = (known after apply)
+
+──────────────────────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't guarantee to take
+exactly these actions if you run "terraform apply" now.
+ubuntu@ip-172-31-35-252:~/TerraWeak$ terraform apply
+
+Terraform used the selected providers to generate the following execution plan. Resource
+actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # local_file.greeting will be created
+  + resource "local_file" "greeting" {
+      + content              = (known after apply)
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./greeting.txt"
+      + id                   = (known after apply)
+    }
+
+  # random_pet.name will be created
+  + resource "random_pet" "name" {
+      + id        = (known after apply)
+      + length    = 2
+      + separator = "-"
+    }
+
+Plan: 2 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + file_path = "./greeting.txt"
+  + pet_name  = (known after apply)
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+random_pet.name: Creating...
+random_pet.name: Creation complete after 0s [id=notable-lizard]
+local_file.greeting: Creating...
+local_file.greeting: Creation complete after 0s [id=16038c226e9c558ea9815a51efa407bc08ebead4]
+
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+file_path = "./greeting.txt"
+pet_name = "notable-lizard"
+ubuntu@ip-172-31-35-252:~/TerraWeak$ cat greeting.txt 
+Hello from Terraweek 2026! 
+ Your infra name is : notable-lizard
+ubuntu@ip-172-31-35-252:~/TerraWeak$ terraform destroy
+random_pet.name: Refreshing state... [id=notable-lizard]
+local_file.greeting: Refreshing state... [id=16038c226e9c558ea9815a51efa407bc08ebead4]
+
+Terraform used the selected providers to generate the following execution plan. Resource
+actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # local_file.greeting will be destroyed
+  - resource "local_file" "greeting" {
+      - content              = <<-EOT
+            Hello from Terraweek 2026! 
+             Your infra name is : notable-lizard
+        EOT -> null
+      - content_base64sha256 = "3sNSQPycjovOzPMjxSBGtQOSlX0PEtmKp+Re8jvx8CU=" -> null
+      - content_base64sha512 = "P4NFUANfRfcOmeQobyJcOgjDeYRcCvYgC2R5ahdwVKjxgBl32iKV8/0jjHg91lIE98FHX1HI63GNyNez9t9gWA==" -> null
+      - content_md5          = "9e49d44b4e4a414e10b285c4c5fd64cc" -> null
+      - content_sha1         = "16038c226e9c558ea9815a51efa407bc08ebead4" -> null
+      - content_sha256       = "dec35240fc9c8e8bceccf323c52046b50392957d0f12d98aa7e45ef23bf1f025" -> null
+      - content_sha512       = "3f834550035f45f70e99e4286f225c3a08c379845c0af6200b64796a177054a8f1801977da2295f3fd238c783dd65204f7c1475f51c8eb718dc8d7b3f6df6058" -> null
+      - directory_permission = "0777" -> null
+      - file_permission      = "0777" -> null
+      - filename             = "./greeting.txt" -> null
+      - id                   = "16038c226e9c558ea9815a51efa407bc08ebead4" -> null
+    }
+
+  # random_pet.name will be destroyed
+  - resource "random_pet" "name" {
+      - id        = "notable-lizard" -> null
+      - length    = 2 -> null
+      - separator = "-" -> null
+    }
+
+Plan: 0 to add, 0 to change, 2 to destroy.
+
+Changes to Outputs:
+  - file_path = "./greeting.txt" -> null
+  - pet_name  = "notable-lizard" -> null
+
+Do you really want to destroy all resources?
+  Terraform will destroy all your managed infrastructure, as shown above.
+  There is no undo. Only 'yes' will be accepted to confirm.
+
+  Enter a value: yes
+
+local_file.greeting: Destroying... [id=16038c226e9c558ea9815a51efa407bc08ebead4]
+local_file.greeting: Destruction complete after 0s
+random_pet.name: Destroying... [id=notable-lizard]
+random_pet.name: Destruction complete after 0s
+
+Destroy complete! Resources: 2 destroyed.
+ubuntu@ip-172-31-35-252:~/TerraWeak$ ls
+example  main.tf  terraform.tfstate  terraform.tfstate.backup
+ubuntu@ip-172-31-35-252:~/TerraWeak$ vim terraform.tf
+ubuntu@ip-172-31-35-252:~/TerraWeak$ terraform init
+Initializing the backend...
+
+Initializing provider plugins...
+- Reusing previous version of hashicorp/local from the dependency lock file
+- Reusing previous version of hashicorp/random from the dependency lock file
+- Using previously-installed hashicorp/local v2.9.0
+- Using previously-installed hashicorp/random v3.9.0
+
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+ubuntu@ip-172-31-35-252:~/TerraWeak$ terraform fmt
+terraform.tf
+ubuntu@ip-172-31-35-252:~/TerraWeak$ terraform validate
+Success! The configuration is valid.
+
+ubuntu@ip-172-31-35-252:~/TerraWeak$ terraform plan
+
+Terraform used the selected providers to generate the following execution plan. Resource
+actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # local_file.greeting will be created
+  + resource "local_file" "greeting" {
+      + content              = (known after apply)
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./greeting.txt"
+      + id                   = (known after apply)
+    }
+
+  # random_pet.name will be created
+  + resource "random_pet" "name" {
+      + id        = (known after apply)
+      + length    = 2
+      + separator = "-"
+    }
+
+Plan: 2 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + file_path = "./greeting.txt"
+  + pet_name  = (known after apply)
+
+──────────────────────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't guarantee to take
+exactly these actions if you run "terraform apply" now.
+ubuntu@ip-172-31-35-252:~/TerraWeak$ terraform apply
+
+Terraform used the selected providers to generate the following execution plan. Resource
+actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # local_file.greeting will be created
+  + resource "local_file" "greeting" {
+      + content              = (known after apply)
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./greeting.txt"
+      + id                   = (known after apply)
+    }
+
+  # random_pet.name will be created
+  + resource "random_pet" "name" {
+      + id        = (known after apply)
+      + length    = 2
+      + separator = "-"
+    }
+
+Plan: 2 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + file_path = "./greeting.txt"
+  + pet_name  = (known after apply)
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+random_pet.name: Creating...
+random_pet.name: Creation complete after 0s [id=hopeful-stingray]
+local_file.greeting: Creating...
+local_file.greeting: Creation complete after 0s [id=361fc4e664c724f5c0f7bb9c52ad6fd8997b149b]
+
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+file_path = "./greeting.txt"
+pet_name = "hopeful-stingray"
+ubuntu@ip-172-31-35-252:~/TerraWeak$ ls
+example  greeting.txt  main.tf  terraform.tf  terraform.tfstate  terraform.tfstate.backup
+ubuntu@ip-172-31-35-252:~/TerraWeak$ cat terraform.tf
+terraform {
+  #Requires the modern terraform CLI. Latest stable at time of writting: 1.15.x
+  required_version = ">= 1.10"
+
+  required_providers {
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.5"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.7"
+    }
+  }
+}
+ubuntu@ip-172-31-35-252:~/TerraWeak$ 
+
+
