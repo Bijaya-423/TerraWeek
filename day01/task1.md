@@ -94,3 +94,19 @@ if you'd like to explore how iac fits into your workflow
 
 - Ansible: Primarily a configuration management and orchestration tool, whereas Terraform provisions the underlying servers and networks, making them highly complementary rather than direct competitors.
 
+
+Task 3: Learn 6 Crucial Terraform Terminologies
+===============================================
+
+- providers are plugins that act as translators between terraform and external platforms. They convert your astract configuration code into the specific API calls required to procision and manage resources (like servers , databases and networks) on services such as aws azure docker or kubernetes
+
+Key concepts
+------------
+- Translation Layer: Terraform only understands Hashicorp configuration language(HCL) . providers translate HCL into API request
+
+
+- Resource Types: Each provider defines specific "resource types" (e.g., aws_instance or docker_container) that you can declare in your code.
+
+- Versioning: Providers are distributed separately from Terraform Core, allowing them to update independently.
+
+
